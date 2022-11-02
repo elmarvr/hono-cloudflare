@@ -1,6 +1,4 @@
 name = "hono-cloudflare"
 main = "src/index.ts"
 compatibility_date = "2022-11-01"
-
- [vars]
- DATABASE_URL="prisma://aws-eu-central-1.prisma-data.com/?api_key=XZXpK-Camsbx2AeJWPZ2V-kQlq00BSiWSLaFZOGL4yUJ1fj0_fai3y0EKXyyZ-9w"
+workers_dev = true

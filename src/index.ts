@@ -1,7 +1,10 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
+import { initPrisma } from "../prisma/client";
+import { task } from "./task";
 
 export interface Env {
+  DATABASE_URL: string;
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
   // MY_KV_NAMESPACE: KVNamespace;
   //
@@ -12,25 +15,14 @@ export interface Env {
   // MY_BUCKET: R2Bucket;
 }
 
-const app = new Hono();
+const app = new Hono<{ Bindings: Env }>();
 
-app.get("/", async (c) => {
-  const prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: c.env.DATABASE_URL,
-      },
-    },
-  });
+app.route("/task", task);
 
-  const task = await prisma.task.create({
-    data: {
-      title: "Test",
-      description: "Test",
-    },
-  });
+export default {
+  fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    initPrisma(env);
 
-  return c.json(task);
-});
-
-export default app;
+    return app.fetch(request, env, ctx);
+  },
+};
